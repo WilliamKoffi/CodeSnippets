@@ -1,0 +1,26 @@
+@if (workspace.drawer()) {
+  <div class="fixed inset-0 z-[70] grid place-items-center bg-black/60 p-4" (click)="workspace.drawer.set(false)">
+    <section class="w-full max-w-lg rounded-xl border border-outline-variant bg-surface p-6 shadow-2xl" (click)="$event.stopPropagation()">
+      <div class="flex items-center justify-between">
+        <h2 class="text-xl font-bold">Trending Tags</h2>
+        <button class="rounded-lg px-3 py-1 text-xl text-on-surface-variant hover:bg-surface-container" (click)="workspace.drawer.set(false)">×</button>
+      </div>
+      <div class="mt-5 flex flex-wrap gap-2">
+        @for (tag of catalog.tags(); track tag.name) {
+          <button
+            class="rounded-full border px-3 py-1.5 font-mono text-xs transition"
+            [class.border-primary]="catalog.active() === tag.name"
+            [class.bg-primary]="catalog.active() === tag.name"
+            [class.text-on-primary]="catalog.active() === tag.name"
+            [class.border-outline-variant]="catalog.active() !== tag.name"
+            [class.text-on-surface-variant]="catalog.active() !== tag.name"
+            (click)="selectTag(tag.name)"
+          >
+            #{{ tag.name }} {{ tag.count }}
+          </button>
+        }
+      </div>
+      <button class="mt-5 text-xs font-mono font-bold text-primary hover:underline" (click)="selectTag(null)">Réinitialiser</button>
+    </section>
+  </div>
+}

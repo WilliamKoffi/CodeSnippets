@@ -1,0 +1,261 @@
+<main class="relative flex min-h-screen flex-col overflow-clip bg-[#0B0E14] text-on-surface selection:bg-primary/30">
+  <div class="pointer-events-none absolute inset-0 z-0 bg-grid-pattern opacity-10"></div>
+  <div class="pointer-events-none absolute left-[-10%] top-[-10%] z-0 h-[50vw] w-[50vw] rounded-full bg-primary/10 blur-[140px]"></div>
+  <div class="pointer-events-none absolute bottom-[-10%] right-[-10%] z-0 h-[50vw] w-[50vw] rounded-full bg-secondary/8 blur-[140px]"></div>
+
+  <header class="relative z-20 w-full border-b border-outline-variant/20 bg-[#0B0E14]/70 backdrop-blur-md">
+    <div class="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
+      <app-logo [iconSize]="'md'" [showText]="true" />
+
+      <div class="hidden items-center gap-8 font-mono text-xs font-semibold tracking-wider text-on-surface-variant md:flex">
+        <a href="#features" class="transition-colors hover:text-primary">FONCTIONNALITÉS</a>
+        <a href="#testimonials" class="transition-colors hover:text-primary">TEMOIGNAGES</a>
+        <span class="text-outline-variant/45">|</span>
+        <div class="flex items-center gap-4">
+          <a routerLink="/auth/login" class="cursor-pointer text-on-surface-variant transition-all hover:text-on-surface">
+            SE CONNECTER
+          </a>
+          <a
+            routerLink="/auth/register"
+            class="cursor-pointer rounded-lg border border-primary/20 bg-primary/10 px-4 py-2 text-primary transition-all hover:bg-primary/20"
+          >
+            CREER UN COMPTE
+          </a>
+        </div>
+      </div>
+
+      <a routerLink="/snippets/feed" class="flex items-center gap-1 font-mono text-xs font-bold text-primary hover:underline md:hidden">
+        <span>ENTRER</span>
+        <lucide-icon [img]="iconChevronRight" class="h-4 w-4"></lucide-icon>
+      </a>
+    </div>
+  </header>
+
+  <section class="relative z-10 flex min-h-[70vh] flex-1 flex-col justify-center py-12 md:py-20">
+    <div
+      #threeContainer
+      class="pointer-events-auto absolute inset-0 z-0 h-full w-full opacity-75 mix-blend-screen"
+    ></div>
+
+    <div class="pointer-events-none relative z-10 mx-auto max-w-5xl px-6 text-center">
+      <div
+        class="mb-6 inline-flex cursor-default items-center gap-2 rounded-full border border-primary/25 bg-primary/10 px-3.5 py-1.5 font-mono text-[10px] font-bold uppercase tracking-widest text-primary backdrop-blur-md pointer-events-auto"
+      >
+        <lucide-icon [img]="iconZap" class="h-3.5 w-3.5 animate-pulse"></lucide-icon>
+        <span>ARENE DE CODE SYNTAXIQUE v3.2</span>
+      </div>
+
+      <h1 class="mx-auto max-w-4xl text-4xl font-black leading-[1.08] tracking-tight text-white sm:text-5xl md:text-6xl">
+        Resolvez des bugs critiques.<br class="hidden md:inline" />
+        Partagez des <span class="bg-gradient-to-r from-primary via-[#61A5FF] to-secondary bg-clip-text text-transparent">solutions legendaires</span>.
+      </h1>
+
+      <p class="mx-auto mt-6 max-w-2xl font-sans text-sm leading-relaxed text-[#9da5b4] sm:text-base md:text-lg">
+        L'arene competitive n'attend que vous. Explorez et corrigez des dysfonctionnements systeme complexes, gagnez de la reputation de developpeur et dominez les classements mondiaux.
+      </p>
+
+      <div class="pointer-events-auto mt-10 flex flex-col items-center justify-center gap-4 sm:flex-row">
+        <a
+          routerLink="/auth/register"
+          class="group flex w-full items-center justify-center gap-2 rounded-xl bg-primary px-8 py-4 font-mono text-xs font-bold uppercase tracking-wider text-on-primary shadow-[0_0_25px_rgba(56,139,253,0.3)] transition-all hover:bg-primary-fixed hover:shadow-[0_0_35px_rgba(56,139,253,0.55)] active:scale-95 sm:w-auto"
+        >
+          <span>Creer mon passe de code</span>
+          <lucide-icon [img]="iconArrowRight" class="h-4 w-4 transition-transform group-hover:translate-x-1"></lucide-icon>
+        </a>
+
+        <a
+          routerLink="/snippets/feed"
+          class="flex w-full items-center justify-center gap-1.5 rounded-xl border border-outline-variant/30 bg-surface/50 px-8 py-4 font-mono text-xs font-bold uppercase tracking-wider text-on-surface backdrop-blur-md transition-all hover:bg-surface-container hover:text-white sm:w-auto"
+        >
+          <lucide-icon [img]="iconCode" class="h-4 w-4 text-secondary"></lucide-icon>
+          <span>Explorer l'application</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <section
+    id="features"
+    class="relative z-10 mx-auto max-w-7xl border-t border-outline-variant/20 bg-[#0B0E14]/60 px-6 py-16 backdrop-blur-lg"
+  >
+    <div class="mb-12 flex flex-col items-center text-center">
+      <span class="font-mono text-[10px] font-bold uppercase tracking-widest text-[#5c6370]">
+        FONCTIONNALITES DE LA PLATEFORME
+      </span>
+      <h2 class="mt-1 text-xl font-bold text-white md:text-2xl">Concu par et pour les ingenieurs logiciels</h2>
+    </div>
+
+    <div class="grid grid-cols-1 gap-6 md:grid-cols-3">
+      <div class="group flex flex-col justify-between rounded-2xl border border-outline-variant/15 bg-surface/30 p-6 transition-all duration-300 hover:border-primary/40">
+        <div class="flex flex-col gap-4">
+          <div class="flex h-10 w-10 items-center justify-center rounded-xl border border-primary/20 bg-primary/10 text-primary transition-transform group-hover:scale-110">
+            <lucide-icon [img]="iconTarget" class="h-5 w-5"></lucide-icon>
+          </div>
+          <h3 class="text-base font-bold text-white">Debugger des dysfonctionnements reels</h3>
+          <p class="text-xs leading-relaxed text-on-surface-variant">
+            Intervenez sur des fuites de memoire WebSocket, des crashs de serialisation JSON, ou des offsets de rendus CSS. Proposez le snippet parfait pour fixer le systeme.
+          </p>
+        </div>
+        <div class="mt-6 flex items-center gap-1 font-mono text-[10px] font-bold text-primary transition-all group-hover:gap-2">
+          <span>EXPLORER LES BUGS</span>
+          <lucide-icon [img]="iconChevronRight" class="h-3.5 w-3.5"></lucide-icon>
+        </div>
+      </div>
+
+      <div class="group flex flex-col justify-between rounded-2xl border border-outline-variant/15 bg-surface/30 p-6 transition-all duration-300 hover:border-secondary/40">
+        <div class="flex flex-col gap-4">
+          <div class="flex h-10 w-10 items-center justify-center rounded-xl border border-secondary/20 bg-secondary/10 text-secondary transition-transform group-hover:scale-110">
+            <lucide-icon [img]="iconUsers" class="h-5 w-5"></lucide-icon>
+          </div>
+          <h3 class="text-base font-bold text-white">Solutions & Entraide</h3>
+          <p class="text-xs leading-relaxed text-on-surface-variant">
+            Proposez des solutions aux bugs postés par la communauté et collaborez sur les snippets de code pour résoudre les dysfonctionnements.
+          </p>
+        </div>
+        <div class="mt-6 flex items-center gap-1 font-mono text-[10px] font-bold text-secondary transition-all group-hover:gap-2">
+          <span>VOIR LE FLUX</span>
+          <lucide-icon [img]="iconChevronRight" class="h-3.5 w-3.5"></lucide-icon>
+        </div>
+      </div>
+
+      <div class="group flex flex-col justify-between rounded-2xl border border-outline-variant/15 bg-surface/30 p-6 transition-all duration-300 hover:border-primary/40">
+        <div class="flex flex-col gap-4">
+          <div class="flex h-10 w-10 items-center justify-center rounded-xl border border-primary/20 bg-primary/10 text-primary transition-transform group-hover:scale-110">
+            <lucide-icon [img]="iconAward" class="h-5 w-5"></lucide-icon>
+          </div>
+          <h3 class="text-base font-bold text-white">Classement & Reputation</h3>
+          <p class="text-xs leading-relaxed text-on-surface-variant">
+            Augmentez votre score de reputation a chaque snippet valide. Atteignez des grades legendaires comme "Elite Senior" ou "Compilateur Dieu".
+          </p>
+        </div>
+        <div class="mt-6 flex items-center gap-1 font-mono text-[10px] font-bold text-primary transition-all group-hover:gap-2">
+          <span>VOIR LE LEADERBOARD</span>
+          <lucide-icon [img]="iconChevronRight" class="h-3.5 w-3.5"></lucide-icon>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section
+    id="testimonials"
+    class="relative z-10 mx-auto max-w-7xl border-t border-outline-variant/20 bg-[#0B0E14]/85 px-6 py-16 backdrop-blur-lg"
+  >
+    <div class="pointer-events-none absolute left-1/2 top-1/2 h-96 w-96 -translate-x-1/2 -translate-y-1/2 rounded-full bg-primary/5 blur-[90px]"></div>
+
+    <div class="mb-14 flex flex-col items-center text-center">
+      <span class="rounded border border-outline-variant/10 bg-[#161B22]/60 px-3 py-1 font-mono text-[10px] font-bold uppercase tracking-widest text-[#5c6370]">
+        RAPPORT D'INTEGRATION ET RETORS
+      </span>
+      <h2 class="mt-3 select-none text-2xl font-bold text-white md:text-3xl">
+        La voix de ceux qui dominent l'arene
+      </h2>
+      <p class="mt-2 max-w-md text-xs text-on-surface-variant">
+        Decouvrez pourquoi les ingenieurs d'elite et contributeurs open source se mesurent quotidiennement a nos bugs systemiques.
+      </p>
+    </div>
+
+    <div class="relative z-10 grid grid-cols-1 gap-6 md:grid-cols-3">
+      <article class="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-outline-variant/20 bg-[#10141D]/90 p-6 shadow-[0_4px_20px_rgba(0,0,0,0.3)] transition-all duration-300 hover:border-primary/50 hover:shadow-[0_0_25px_rgba(56,139,253,0.15)]">
+        <div class="pointer-events-none absolute right-0 top-0 p-3 text-[#161B22] transition-colors group-hover:text-[#21262d]">
+          <lucide-icon [img]="iconQuote" class="h-16 w-16 translate-x-4 -translate-y-4 opacity-30"></lucide-icon>
+        </div>
+        <div class="relative z-10 flex flex-col gap-4">
+          <div class="flex gap-1 text-primary">
+            @for (star of [1, 2, 3, 4, 5]; track star) {
+              <lucide-icon [img]="iconStar" class="h-3.5 w-3.5 fill-current"></lucide-icon>
+            }
+          </div>
+          <p class="font-sans text-xs italic leading-relaxed text-on-surface-variant">
+            "Les defis de fuites de memoire WebSocket et d'optimisations d'API sont d'un realisme saisissant. Decouvrir et corriger des dysfonctionnements systeme simules sans planter le serveur de production reel est un pur plaisir de developpeur."
+          </p>
+        </div>
+        <div class="relative z-10 mt-8 flex items-center gap-3 border-t border-outline-variant/15 pt-4">
+          <div class="flex h-10 w-10 items-center justify-center rounded-full border border-primary/30 bg-primary/10 font-mono text-xs font-bold text-primary">
+            SJ
+          </div>
+          <div>
+            <h4 class="text-xs font-bold text-white">Sarah Jenkins</h4>
+            <div class="flex items-center gap-1.5 font-mono text-[9px] font-medium text-primary">
+              <span>@sjenkins_vercel</span>
+              <span class="text-outline-variant/30">//</span>
+              <span class="rounded bg-primary/10 px-1 py-0.5 text-[8px] font-bold uppercase">Staff Dev</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-outline-variant/20 bg-[#10141D]/90 p-6 shadow-[0_4px_20px_rgba(0,0,0,0.3)] transition-all duration-300 hover:border-secondary/50 hover:shadow-[0_0_25px_rgba(255,0,208,0.1)]">
+        <div class="pointer-events-none absolute right-0 top-0 p-3 text-[#161B22] transition-colors group-hover:text-[#21262d]">
+          <lucide-icon [img]="iconQuote" class="h-16 w-16 translate-x-4 -translate-y-4 opacity-30"></lucide-icon>
+        </div>
+        <div class="relative z-10 flex flex-col gap-4">
+          <div class="flex gap-1 text-secondary">
+            @for (star of [1, 2, 3, 4, 5]; track star) {
+              <lucide-icon [img]="iconStar" class="h-3.5 w-3.5 fill-current"></lucide-icon>
+            }
+          </div>
+          <p class="font-sans text-xs italic leading-relaxed text-on-surface-variant">
+            "CodeSnippets a radicalement affine ma rigueur de diagnostic de logs et de debogage. Passer d'architectures asynchrones cassees a des compilations saines en rivalisant de vitesse avec d'autres ingenieurs senior est incroyablement formateur."
+          </p>
+        </div>
+        <div class="relative z-10 mt-8 flex items-center gap-3 border-t border-outline-variant/15 pt-4">
+          <div class="flex h-10 w-10 items-center justify-center rounded-full border border-secondary/30 bg-secondary/10 font-mono text-xs font-bold text-secondary">
+            KT
+          </div>
+          <div>
+            <h4 class="text-xs font-bold text-white">Kenji Takahashi</h4>
+            <div class="flex items-center gap-1.5 font-mono text-[9px] font-medium text-secondary">
+              <span>@kenji_t</span>
+              <span class="text-outline-variant/30">//</span>
+              <span class="rounded bg-secondary/10 px-1 py-0.5 text-[8px] font-bold uppercase">Sony Tech</span>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="group relative flex flex-col justify-between overflow-hidden rounded-2xl border border-outline-variant/20 bg-[#10141D]/90 p-6 shadow-[0_4px_20px_rgba(0,0,0,0.3)] transition-all duration-300 hover:border-primary/50 hover:shadow-[0_0_25px_rgba(56,139,253,0.15)]">
+        <div class="pointer-events-none absolute right-0 top-0 p-3 text-[#161B22] transition-colors group-hover:text-[#21262d]">
+          <lucide-icon [img]="iconQuote" class="h-16 w-16 translate-x-4 -translate-y-4 opacity-30"></lucide-icon>
+        </div>
+        <div class="relative z-10 flex flex-col gap-4">
+          <div class="flex gap-1 text-primary">
+            @for (star of [1, 2, 3, 4, 5]; track star) {
+              <lucide-icon [img]="iconStar" class="h-3.5 w-3.5 fill-current"></lucide-icon>
+            }
+          </div>
+          <p class="font-sans text-xs italic leading-relaxed text-on-surface-variant">
+            "Les combats de syntaxe en temps reel s'apparentent a de l'escrime de code. Trouver le snippet optimal pour resoudre un goulot d'etranglement de base de donnees a la milliseconde de calcul pres est absolument phenomenal pour s'ameliorer."
+          </p>
+        </div>
+        <div class="relative z-10 mt-8 flex items-center gap-3 border-t border-outline-variant/15 pt-4">
+          <div class="flex h-10 w-10 items-center justify-center rounded-full border border-primary/30 bg-primary/10 font-mono text-xs font-bold text-primary">
+            CM
+          </div>
+          <div>
+            <h4 class="text-xs font-bold text-white">Claire Mercier</h4>
+            <div class="flex items-center gap-1.5 font-mono text-[9px] font-medium text-primary">
+              <span>@claire_mrc</span>
+              <span class="text-outline-variant/30">//</span>
+              <span class="rounded bg-primary/10 px-1 py-0.5 text-[8px] font-bold uppercase">Lead Ing.</span>
+            </div>
+          </div>
+        </div>
+      </article>
+    </div>
+  </section>
+
+  <footer class="relative z-10 mt-12 w-full border-t border-outline-variant/10 bg-[#0B0E14] py-8 text-center font-mono text-[10px] text-[#5c6370] md:mt-16">
+    <div class="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-6 sm:flex-row">
+      <div class="flex items-center gap-2">
+        <app-logo [iconSize]="'sm'" [showText]="true" />
+        <span class="font-mono text-[9px] text-[#5c6370]/60">&copy; {{ currentYear }} - TOUS DROITS RESERVES</span>
+      </div>
+      <div class="flex items-center gap-4">
+        <span class="cursor-pointer transition-colors hover:text-white">PRIVACY POLICY</span>
+        <span>//</span>
+        <span class="cursor-pointer transition-colors hover:text-white">API DOCUMENTATION v1</span>
+        <lucide-icon [img]="iconBookOpen" class="h-3.5 w-3.5"></lucide-icon>
+      </div>
+    </div>
+  </footer>
+</main>

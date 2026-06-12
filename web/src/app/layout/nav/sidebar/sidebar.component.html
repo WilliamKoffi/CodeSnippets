@@ -1,0 +1,54 @@
+<aside class="fixed left-0 top-[73px] z-40 hidden h-[calc(100vh-73px)] w-64 border-r border-outline-variant/60 bg-surface-container-low lg:flex">
+  <div class="flex h-full w-full flex-col p-4">
+    <div class="mb-6 flex items-center gap-3 rounded-lg border border-outline-variant/30 bg-surface-container-low p-3">
+      <img class="h-9 w-9 rounded-full border border-outline-variant object-cover" [src]="session.active().avatar" [alt]="session.active().name" />
+      <div class="min-w-0">
+        <div class="truncate text-xs font-bold">{{ session.active().name }}</div>
+        <div class="truncate font-mono text-[9px] font-bold uppercase tracking-wider text-primary">@{{ session.active().handle }}</div>
+      </div>
+    </div>
+
+    <nav class="flex flex-1 flex-col gap-1.5">
+      <a routerLink="/snippets/feed" routerLinkActive="bg-secondary-container text-on-surface" class="flex items-center gap-3 rounded-lg px-4 py-2.5 font-mono text-xs font-bold uppercase tracking-wider text-on-surface-variant transition hover:bg-surface-container hover:text-on-surface">
+        <lucide-icon name="home" class="h-4.5 w-4.5"></lucide-icon>
+        <span>Feed</span>
+      </a>
+      <a routerLink="/snippets/new" routerLinkActive="bg-secondary-container text-on-surface" class="flex items-center gap-3 rounded-lg px-4 py-2.5 font-mono text-xs font-bold uppercase tracking-wider text-on-surface-variant transition hover:bg-surface-container hover:text-on-surface">
+        <lucide-icon name="plus" class="h-4.5 w-4.5"></lucide-icon>
+        <span>Publier un bug</span>
+      </a>
+      <a routerLink="/user/profile" routerLinkActive="bg-secondary-container text-on-surface" class="flex items-center gap-3 rounded-lg px-4 py-2.5 font-mono text-xs font-bold uppercase tracking-wider text-on-surface-variant transition hover:bg-surface-container hover:text-on-surface">
+        <lucide-icon name="user" class="h-4.5 w-4.5 text-primary"></lucide-icon>
+        <span>Mon Profil</span>
+      </a>
+      <button (click)="workspace.drawer.set(true)" 
+              [class.bg-secondary-container]="workspace.drawer()"
+              [class.text-on-surface]="workspace.drawer()"
+              class="flex w-full items-center gap-3 rounded-lg px-4 py-2.5 text-left font-mono text-xs font-bold uppercase tracking-wider text-on-surface-variant transition hover:bg-surface-container hover:text-on-surface cursor-pointer">
+        <lucide-icon name="tag" class="h-4.5 w-4.5 text-secondary"></lucide-icon>
+        <span>Trending Tags</span>
+      </button>
+      <a routerLink="/user/settings" routerLinkActive="bg-secondary-container text-on-surface" class="flex items-center gap-3 rounded-lg px-4 py-2.5 font-mono text-xs font-bold uppercase tracking-wider text-on-surface-variant transition hover:bg-surface-container hover:text-on-surface">
+        <lucide-icon name="settings" class="h-4.5 w-4.5"></lucide-icon>
+        <span>Settings</span>
+      </a>
+    </nav>
+
+    <div class="mt-auto flex flex-col gap-2 border-t border-outline-variant/30 pt-4">
+      <button (click)="workspace.docs.set(true)" 
+              class="flex w-full items-center gap-3 rounded-lg px-4 py-2.5 text-left font-mono text-xs font-bold uppercase tracking-wider text-on-surface-variant transition hover:bg-surface-container hover:text-on-surface cursor-pointer">
+        <lucide-icon name="book-open" class="h-4 w-4"></lucide-icon>
+        <span>Documentation</span>
+      </button>
+      <button (click)="workspace.support.set(true)" 
+              class="flex w-full items-center gap-3 rounded-lg px-4 py-2.5 text-left font-mono text-xs font-bold uppercase tracking-wider text-on-surface-variant transition hover:bg-surface-container hover:text-on-surface cursor-pointer">
+        <lucide-icon name="help-circle" class="h-4 w-4"></lucide-icon>
+        <span>Support</span>
+      </button>
+      <button class="mt-2 flex w-full items-center gap-3 rounded-lg px-4 py-2.5 text-left font-mono text-xs font-extrabold uppercase tracking-wider text-error transition hover:bg-error/10 cursor-pointer" (click)="session.logout()">
+        <lucide-icon name="log-out" class="h-4 w-4"></lucide-icon>
+        <span>Déconnexion</span>
+      </button>
+    </div>
+  </div>
+</aside>

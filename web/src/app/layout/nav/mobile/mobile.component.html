@@ -1,0 +1,23 @@
+<nav class="fixed bottom-0 left-0 right-0 z-40 flex h-16 items-center justify-around border-t border-outline-variant bg-surface/90 px-4 shadow-lg backdrop-blur-md lg:hidden select-none">
+  <a routerLink="/snippets/feed" routerLinkActive="text-primary bg-primary-container/20 font-bold" [routerLinkActiveOptions]="{exact: true}" class="flex flex-col items-center justify-center rounded-xl px-3 py-1 font-mono text-[10px] text-on-surface-variant hover:text-primary transition-all">
+    <lucide-icon name="home" class="h-5 w-5"></lucide-icon>
+    <span class="mt-1">Home</span>
+  </a>
+
+  <a routerLink="/user/settings" routerLinkActive="text-primary bg-primary-container/20 font-bold" class="flex flex-col items-center justify-center rounded-xl px-3 py-1 font-mono text-[10px] text-on-surface-variant hover:text-primary transition-all">
+    <lucide-icon name="settings" class="h-5 w-5"></lucide-icon>
+    <span class="mt-1">Settings</span>
+  </a>
+
+  <!-- Quick action button center -->
+  <div class="relative -top-3">
+    <a routerLink="/snippets/new" class="flex h-11 w-11 items-center justify-center rounded-full bg-primary text-on-primary shadow-2xl border border-outline-variant hover:scale-105 active:scale-95 transition-all">
+      <lucide-icon name="plus" class="h-6 w-6 font-bold text-on-primary"></lucide-icon>
+    </a>
+  </div>
+
+  <a routerLink="/user/profile" routerLinkActive="text-primary bg-primary-container/20 font-bold" class="flex flex-col items-center justify-center rounded-xl px-3 py-1 font-mono text-[10px] text-on-surface-variant hover:text-primary transition-all">
+    <lucide-icon name="user" class="h-5 w-5"></lucide-icon>
+    <span class="mt-1">Profile</span>
+  </a>
+</nav>

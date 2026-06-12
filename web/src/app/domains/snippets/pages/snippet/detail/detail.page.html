@@ -1,0 +1,86 @@
+@if (snippet(); as item) {
+  <div class="mx-auto flex max-w-5xl flex-col gap-6 p-4 py-6 sm:p-8">
+    <div class="flex flex-wrap items-center justify-between gap-3">
+      <a routerLink="/snippets/feed" class="font-mono text-xs font-bold text-primary hover:underline">Retour au flux</a>
+      <div class="flex gap-2">
+        <button class="rounded-lg border px-3.5 py-1.5 font-mono text-xs flex items-center gap-1.5 cursor-pointer transition-all hover:bg-error/10 hover:border-error/50" [class.border-error]="item.isLikedByMe" [class.text-error]="item.isLikedByMe" [class.border-outline-variant]="!item.isLikedByMe" (click)="catalog.like(item.id)">
+          <span>♥</span> Like {{ item.likes }}
+        </button>
+      </div>
+    </div>
+
+    <section>
+      <div class="flex flex-wrap gap-2">
+        <span class="rounded-full bg-error-container/20 px-2 py-0.5 font-mono text-[10px] font-bold uppercase text-error">{{ item.type }}</span>
+        @for (tag of item.tags; track tag) {
+          <span class="rounded-full border border-outline-variant px-2 py-0.5 font-mono text-[10px] text-on-surface-variant">#{{ tag }}</span>
+        }
+      </div>
+      <h1 class="mt-4 text-3xl font-bold leading-tight">{{ item.title }}</h1>
+      <div class="mt-4 flex items-center gap-3 border-b border-outline-variant/30 pb-6">
+        <img class="h-10 w-10 rounded-full object-cover" [src]="item.author.avatar" [alt]="item.author.name" />
+        <div>
+          <p class="text-sm font-bold">{{ item.author.name }}</p>
+          <p class="font-mono text-[11px] text-on-surface-variant">@{{ item.author.handle }}</p>
+        </div>
+      </div>
+    </section>
+
+    <p class="rounded-lg border border-outline-variant/30 bg-surface-container/30 p-5 text-sm leading-relaxed text-on-surface-variant">{{ item.description }}</p>
+    <pre class="overflow-auto rounded-xl border border-outline-variant bg-surface-container-lowest p-5 font-mono text-xs leading-6 text-on-surface">{{ item.code }}</pre>
+
+    <section class="rounded-xl border border-outline-variant bg-surface-container-low p-5">
+      <h2 class="text-xl font-bold">Solutions ({{ item.solutionsCount }})</h2>
+      <div class="mt-4 space-y-4">
+        @for (solution of item.solutions ?? []; track solution.id) {
+          <article class="rounded-lg border border-outline-variant/60 bg-surface p-4">
+            <div class="flex items-center justify-between gap-3">
+              <div class="flex items-center gap-3">
+                <img class="h-8 w-8 rounded-full object-cover" [src]="solution.author.avatar" [alt]="solution.author.name" />
+                <div>
+                  <p class="text-sm font-bold">{{ solution.author.name }}</p>
+                  <p class="font-mono text-[10px] text-on-surface-variant">{{ solution.createdAt }}</p>
+                </div>
+              </div>
+              <div class="flex items-center gap-3">
+                <div class="flex items-center gap-1 rounded-lg border border-outline-variant/50 bg-surface-container px-2 py-0.5">
+                  <button 
+                    class="px-1 py-0.5 text-xs font-bold transition hover:text-primary cursor-pointer" 
+                    [class.text-primary]="solution.voted === 'up'"
+                    [class.text-on-surface-variant]="solution.voted !== 'up'"
+                    (click)="catalog.voteSolution(item.id, solution.id, 'up')"
+                    title="Voter pour">
+                    ▲
+                  </button>
+                  <span class="font-mono text-xs font-bold text-center min-w-[1.2rem]" [class.text-primary]="solution.voted === 'up'" [class.text-error]="solution.voted === 'down'">{{ solution.votes }}</span>
+                  <button 
+                    class="px-1 py-0.5 text-xs font-bold transition hover:text-error cursor-pointer" 
+                    [class.text-error]="solution.voted === 'down'"
+                    [class.text-on-surface-variant]="solution.voted !== 'down'"
+                    (click)="catalog.voteSolution(item.id, solution.id, 'down')"
+                    title="Voter contre">
+                    ▼
+                  </button>
+                </div>
+                @if (solution.accepted) {
+                  <span class="rounded-full border border-tertiary/40 px-2 py-1 font-mono text-[10px] text-tertiary">Accepted</span>
+                }
+              </div>
+            </div>
+            <p class="mt-3 text-sm leading-relaxed text-on-surface-variant">{{ solution.content }}</p>
+            @if (solution.code) {
+              <pre class="mt-3 rounded-lg bg-surface-container-lowest p-4 font-mono text-xs">{{ solution.code }}</pre>
+            }
+          </article>
+        }
+      </div>
+    </section>
+
+    <form class="rounded-xl border border-outline-variant bg-surface-container-low p-5" (ngSubmit)="addSolution()">
+      <h2 class="text-lg font-bold">Ajouter une solution</h2>
+      <textarea rows="4" class="mt-4 w-full rounded-lg border border-outline-variant bg-surface px-3 py-2 text-sm outline-none focus:border-primary" placeholder="Expliquez votre correction..." [ngModel]="text()" (ngModelChange)="text.set($event)" name="text" required></textarea>
+      <textarea rows="5" class="mt-3 w-full rounded-lg border border-outline-variant bg-surface px-3 py-2 font-mono text-xs outline-none focus:border-primary" placeholder="Code optionnel" [ngModel]="code()" (ngModelChange)="code.set($event)" name="code"></textarea>
+      <button class="mt-4 rounded-lg bg-primary px-4 py-2.5 font-mono text-xs font-bold uppercase text-on-primary cursor-pointer shadow hover:bg-primary/95 transition-all">Publier la solution</button>
+    </form>
+  </div>
+}

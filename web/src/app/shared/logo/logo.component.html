@@ -1,0 +1,30 @@
+<div class="flex select-none items-center gap-3">
+  <div class="relative">
+    <div class="absolute inset-0 rounded-full bg-primary/20 blur-[10px]"></div>
+    <div
+      class="relative flex items-center justify-center border border-primary/25 bg-[#0F131A] text-primary shadow-[0_0_15px_rgba(173,198,255,0.15)]"
+      [class]="containerClass"
+    >
+      <svg
+        [class]="sizeClass"
+        viewBox="0 0 24 24"
+        fill="none"
+        stroke="currentColor"
+        stroke-width="2.5"
+        stroke-linecap="round"
+        stroke-linejoin="round"
+      >
+        <path d="M17 18l5-5-5-5M7 6l-5 5 5 5"></path>
+        <path d="M12 8v8" stroke-width="3" class="animate-pulse"></path>
+      </svg>
+    </div>
+  </div>
+  @if (showText()) {
+    <span
+      class="bg-gradient-to-r from-on-surface via-on-surface-variant to-primary bg-clip-text font-sans text-transparent"
+      [class]="textClass"
+    >
+      CodeSnippets
+    </span>
+  }
+</div>

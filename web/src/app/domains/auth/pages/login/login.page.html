@@ -1,0 +1,56 @@
+<main class="min-h-screen bg-grid-pattern p-4 text-on-surface md:p-8">
+  <section class="mx-auto grid min-h-[calc(100vh-4rem)] w-full max-w-4xl overflow-hidden rounded-2xl border border-outline-variant bg-surface shadow-2xl md:grid-cols-2">
+    <aside class="hidden bg-[url('https://images.unsplash.com/photo-1542831371-29b0f74f9713?auto=format&fit=crop&w=900&q=80')] bg-cover bg-center md:block">
+      <div class="flex h-full flex-col justify-between bg-surface-container-lowest/85 p-8">
+        <a routerLink="/" class="inline-block">
+          <app-logo [showText]="false" iconSize="sm" />
+        </a>
+        <div>
+          <p class="mb-3 inline-flex rounded border border-secondary/25 bg-secondary/15 px-2.5 py-1 font-mono text-[9px] font-bold uppercase text-secondary">Portail sécurisé</p>
+          <h1 class="text-3xl font-extrabold leading-tight">Connectez-vous pour débugger de la production.</h1>
+          <p class="mt-4 text-sm leading-relaxed text-on-surface-variant">Consultez vos rapports d'erreurs, contribuez des correctifs et augmentez votre réputation.</p>
+        </div>
+        <p class="font-mono text-[10px] text-outline">AUTH_STATUS: LEAST_PRIVILEGE</p>
+      </div>
+    </aside>
+
+    <form class="flex flex-col justify-center p-6 sm:p-10" (ngSubmit)="submit()">
+      <div class="mb-6 md:hidden">
+        <a routerLink="/" class="inline-block">
+          <app-logo />
+        </a>
+      </div>
+      <h2 class="text-xl font-extrabold">Se connecter à l'arène</h2>
+      <p class="mt-1 text-xs text-on-surface-variant">Connectez votre session pour commencer à contribuer.</p>
+
+      @if (error()) {
+        <div class="mt-4 rounded-lg bg-error-container/20 border border-error/30 p-3 text-xs text-error font-mono">
+          {{ error() }}
+        </div>
+      }
+
+      <button type="button" class="mt-6 rounded-lg border border-outline-variant bg-surface-container-low py-2.5 text-xs hover:border-primary" (click)="enterDirectly()">Se connecter avec GitHub</button>
+      <button type="button" class="mt-2 rounded-lg border border-outline-variant bg-surface-container-low py-2.5 text-xs hover:border-primary" (click)="enterDirectly()">Se connecter avec Google</button>
+
+      <div class="my-5 flex items-center gap-4">
+        <div class="h-px flex-1 bg-outline-variant"></div>
+        <span class="font-mono text-[9px] font-bold uppercase text-on-surface-variant">Ou localement</span>
+        <div class="h-px flex-1 bg-outline-variant"></div>
+      </div>
+
+      <label class="text-[10px] font-mono font-bold uppercase text-on-surface-variant">Adresse e-mail</label>
+      <input type="email" required class="mt-1 rounded-lg border border-outline-variant bg-surface-container-low px-3 py-2 text-sm outline-none focus:border-primary" placeholder="developer@example.com" [ngModel]="email()" (ngModelChange)="email.set($event)" name="email" />
+      <label class="mt-4 text-[10px] font-mono font-bold uppercase text-on-surface-variant">Mot de passe</label>
+      <input type="password" required class="mt-1 rounded-lg border border-outline-variant bg-surface-container-low px-3 py-2 text-sm outline-none focus:border-primary" placeholder="••••••••" [ngModel]="password()" (ngModelChange)="password.set($event)" name="password" />
+      <label class="mt-4 flex items-center gap-2 text-[11px] text-on-surface-variant">
+        <input type="checkbox" [ngModel]="rememberMe()" (ngModelChange)="rememberMe.set($event)" name="rememberMe" />
+        Garder ma session active
+      </label>
+      <button class="mt-5 rounded-lg bg-primary py-3 font-mono text-xs font-bold uppercase text-on-primary">S'authentifier</button>
+      <div class="mt-5 flex justify-between border-t border-outline-variant/40 pt-4 text-xs">
+        <a routerLink="/auth/reset" class="text-primary hover:underline">Mot de passe oublié ?</a>
+        <a routerLink="/auth/register" class="text-primary hover:underline">Créer un compte</a>
+      </div>
+    </form>
+  </section>
+</main>

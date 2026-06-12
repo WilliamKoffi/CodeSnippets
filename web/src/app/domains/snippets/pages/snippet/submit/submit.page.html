@@ -1,0 +1,37 @@
+<div class="mx-auto max-w-4xl p-4 py-6 sm:p-8">
+  <a routerLink="/snippets/feed" class="font-mono text-xs font-bold text-primary hover:underline">Annuler et revenir</a>
+  <form class="mt-6 rounded-xl border border-outline-variant bg-surface-container-low p-6 shadow-xl" (ngSubmit)="submit()">
+    <h1 class="text-2xl font-bold">Nouveau Snippet</h1>
+    <p class="mt-1 text-sm text-on-surface-variant">Publiez un bug ou un extrait utile pour la communauté.</p>
+    <div class="mt-6 grid gap-4 sm:grid-cols-2">
+      <label class="block">
+        <span class="text-[10px] font-mono font-bold uppercase text-on-surface-variant">Type</span>
+        <select class="mt-1 w-full rounded-lg border border-outline-variant bg-surface px-3 py-2" [ngModel]="type()" (ngModelChange)="type.set($event)" name="type">
+          <option value="bug">Bug</option>
+          <option value="snippet">Snippet</option>
+        </select>
+      </label>
+      <label class="block">
+        <span class="text-[10px] font-mono font-bold uppercase text-on-surface-variant">Language</span>
+        <input class="mt-1 w-full rounded-lg border border-outline-variant bg-surface px-3 py-2" [ngModel]="language()" (ngModelChange)="language.set($event)" name="language" />
+      </label>
+    </div>
+    <label class="mt-4 block">
+      <span class="text-[10px] font-mono font-bold uppercase text-on-surface-variant">Titre</span>
+      <input required class="mt-1 w-full rounded-lg border border-outline-variant bg-surface px-3 py-2 outline-none focus:border-primary" [ngModel]="title()" (ngModelChange)="title.set($event)" name="title" />
+    </label>
+    <label class="mt-4 block">
+      <span class="text-[10px] font-mono font-bold uppercase text-on-surface-variant">Description</span>
+      <textarea required rows="5" class="mt-1 w-full rounded-lg border border-outline-variant bg-surface px-3 py-2 outline-none focus:border-primary" [ngModel]="description()" (ngModelChange)="description.set($event)" name="description"></textarea>
+    </label>
+    <label class="mt-4 block">
+      <span class="text-[10px] font-mono font-bold uppercase text-on-surface-variant">Code</span>
+      <textarea required rows="10" class="mt-1 w-full rounded-lg border border-outline-variant bg-surface px-3 py-2 font-mono text-xs outline-none focus:border-primary" [ngModel]="code()" (ngModelChange)="code.set($event)" name="code"></textarea>
+    </label>
+    <label class="mt-4 block">
+      <span class="text-[10px] font-mono font-bold uppercase text-on-surface-variant">Tags séparés par virgules</span>
+      <input class="mt-1 w-full rounded-lg border border-outline-variant bg-surface px-3 py-2 font-mono text-sm outline-none focus:border-primary" placeholder="angular, signals, bug" [ngModel]="tags()" (ngModelChange)="tags.set($event)" name="tags" />
+    </label>
+    <button class="mt-6 rounded-lg bg-primary px-5 py-3 font-mono text-xs font-bold uppercase text-on-primary">Publier</button>
+  </form>
+</div>

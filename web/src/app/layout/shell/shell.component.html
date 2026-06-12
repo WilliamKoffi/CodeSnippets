@@ -1,0 +1,15 @@
+<div class="min-h-screen bg-surface-container-lowest pb-16 text-on-surface antialiased lg:pb-0">
+  <app-header />
+  <div class="mx-auto flex w-full max-w-7xl">
+    <app-sidebar />
+    <main class="min-h-[calc(100vh-73px)] w-full flex-1 lg:ml-64">
+      <router-outlet />
+    </main>
+  </div>
+  <app-mobile-nav />
+
+  <!-- Modals -->
+  <app-docs-modal />
+  <app-support-modal />
+  <app-trending-tags-modal />
+</div>

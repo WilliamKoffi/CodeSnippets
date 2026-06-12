@@ -1,0 +1,51 @@
+<main class="min-h-screen bg-grid-pattern p-4 text-on-surface md:p-8">
+  <section class="mx-auto grid min-h-[calc(100vh-4rem)] w-full max-w-4xl overflow-hidden rounded-2xl border border-outline-variant bg-surface shadow-2xl md:grid-cols-2">
+    <aside class="hidden bg-[url('https://images.unsplash.com/photo-1555066931-4365d14bab8c?auto=format&fit=crop&w=900&q=80')] bg-cover bg-center md:block">
+      <div class="flex h-full flex-col justify-between bg-surface-container-lowest/85 p-8">
+        <a routerLink="/" class="inline-block">
+          <app-logo [showText]="false" iconSize="sm" />
+        </a>
+        <div>
+          <p class="mb-3 inline-flex rounded border border-primary/25 bg-primary/10 px-2.5 py-1 font-mono text-[9px] font-bold uppercase text-primary">ENV de syntaxe v3.1</p>
+          <h1 class="text-3xl font-extrabold leading-tight">Aiguisez vos compétences en résolvant des bugs réels.</h1>
+          <p class="mt-4 text-sm leading-relaxed text-on-surface-variant">Rejoignez la communauté et partagez des solutions critiques.</p>
+        </div>
+        <p class="font-mono text-[10px] text-outline">SYSTEM STATUS: READY</p>
+      </div>
+    </aside>
+
+    <form class="flex flex-col justify-center p-6 sm:p-10" (ngSubmit)="submit()">
+      <div class="mb-6 md:hidden">
+        <a routerLink="/" class="inline-block">
+          <app-logo />
+        </a>
+      </div>
+      <h2 class="text-xl font-extrabold">Créer un environnement</h2>
+      <p class="mt-1 text-xs text-on-surface-variant">Enregistrez vos identifiants pour rejoindre l'arène.</p>
+
+      @if (error()) {
+        <div class="mt-4 rounded-lg bg-error-container/20 border border-error/30 p-3 text-xs text-error font-mono">
+          {{ error() }}
+        </div>
+      }
+
+      <button type="button" class="mt-6 rounded-lg border border-outline-variant bg-surface-container-low py-2.5 text-xs hover:border-primary" (click)="enterDirectly()">Continue with GitHub</button>
+      <button type="button" class="mt-2 rounded-lg border border-outline-variant bg-surface-container-low py-2.5 text-xs hover:border-primary" (click)="enterDirectly()">Continue with Google</button>
+      <label class="mt-5 text-[10px] font-mono font-bold uppercase text-on-surface-variant">Full name</label>
+      <input required class="mt-1 rounded-lg border border-outline-variant bg-surface-container-low px-3 py-2 text-sm outline-none focus:border-primary" [ngModel]="fullName()" (ngModelChange)="fullName.set($event)" name="fullName" />
+      <label class="mt-4 text-[10px] font-mono font-bold uppercase text-on-surface-variant">Developer handle</label>
+      <input required class="mt-1 rounded-lg border border-outline-variant bg-surface-container-low px-3 py-2 font-mono text-sm outline-none focus:border-primary" [ngModel]="handle()" (ngModelChange)="handle.set($event)" name="handle" />
+      <label class="mt-4 text-[10px] font-mono font-bold uppercase text-on-surface-variant">Email</label>
+      <input type="email" required class="mt-1 rounded-lg border border-outline-variant bg-surface-container-low px-3 py-2 text-sm outline-none focus:border-primary" [ngModel]="email()" (ngModelChange)="email.set($event)" name="email" />
+      <div class="mt-4 flex flex-wrap gap-2">
+        @for (item of roles; track item) {
+          <button type="button" class="rounded-full border px-3 py-1 font-mono text-[10px] capitalize" [class.border-primary]="role() === item" [class.text-primary]="role() === item" [class.border-outline-variant]="role() !== item" (click)="role.set(item)">{{ item }}</button>
+        }
+      </div>
+      <label class="mt-4 text-[10px] font-mono font-bold uppercase text-on-surface-variant">Password strength: {{ strength() }}</label>
+      <input type="password" class="mt-1 rounded-lg border border-outline-variant bg-surface-container-low px-3 py-2 text-sm outline-none focus:border-primary" [ngModel]="password()" (ngModelChange)="password.set($event)" name="password" />
+      <button class="mt-5 rounded-lg bg-primary py-3 font-mono text-xs font-bold uppercase text-on-primary">Créer le compte</button>
+      <a routerLink="/auth/login" class="mt-4 text-center text-xs text-primary hover:underline">J'ai déjà un compte</a>
+    </form>
+  </section>
+</main>

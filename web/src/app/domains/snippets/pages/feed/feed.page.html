@@ -1,0 +1,81 @@
+<div class="flex w-full flex-col gap-8 p-4 py-6 sm:p-8">
+  <section class="relative overflow-hidden rounded-2xl border border-outline-variant bg-surface-container-low p-6 shadow-2xl sm:p-10">
+    <div class="relative z-10 max-w-2xl">
+      <p class="font-mono text-xs font-bold uppercase tracking-wider text-primary">Espace d'entraide</p>
+      <h1 class="mt-3 text-4xl font-extrabold tracking-tight sm:text-5xl">Code Snippet Hub.</h1>
+      <p class="mt-4 max-w-xl text-on-surface-variant">Publiez vos bugs ou snippets de code, et collaborez avec d'autres développeurs pour trouver les meilleures solutions.</p>
+      <a routerLink="/snippets/new" class="mt-6 inline-flex rounded-lg bg-primary px-5 py-3 font-mono text-xs font-bold uppercase text-on-primary shadow-lg hover:bg-primary/95 transition-all">Publier un bug / snippet</a>
+    </div>
+  </section>
+
+  <section class="flex flex-col justify-between gap-4 border-b border-outline-variant/30 pb-6 md:flex-row md:items-center">
+    <div>
+      <div class="flex flex-wrap items-center gap-3">
+        <h2 class="text-2xl font-bold">Flux principal</h2>
+        @if (catalog.active()) {
+          <button class="rounded-full border border-primary/30 bg-primary/20 px-3 py-1 font-mono text-xs text-primary" (click)="catalog.active.set(null)">#{{ catalog.active() }} ×</button>
+        }
+      </div>
+      <p class="mt-1 text-xs text-on-surface-variant">Consultez et collaborez sur les problèmes partagés par la communauté.</p>
+    </div>
+    <div class="flex flex-col gap-3 sm:flex-row">
+      <input class="rounded-full border border-outline-variant bg-surface-container-low px-4 py-2 font-mono text-xs outline-none focus:border-primary" placeholder="Rechercher..." [ngModel]="catalog.query()" (ngModelChange)="catalog.query.set($event)" />
+      <div class="flex rounded-lg border border-outline-variant bg-surface-container p-1">
+        @for (tab of tabs; track tab) {
+          <button class="rounded-md px-3 py-1.5 font-mono text-xs uppercase" [class.bg-secondary-container]="filter() === tab" [class.text-on-surface]="filter() === tab" [class.text-on-surface-variant]="filter() !== tab" (click)="filter.set(tab)">{{ tab === 'latest' ? 'Récent' : tab === 'old' ? 'Ancien' : 'Populaire' }}</button>
+        }
+      </div>
+    </div>
+  </section>
+
+  <div class="grid gap-8 xl:grid-cols-3">
+    <section class="flex flex-col gap-5 xl:col-span-2">
+      @if (snippets().length === 0) {
+        <div class="rounded-xl border border-dashed border-outline-variant bg-surface-container p-12 text-center">
+          <h3 class="text-lg font-bold">Aucun snippet trouvé</h3>
+          <p class="mt-2 text-sm text-on-surface-variant">Ajustez vos critères ou réinitialisez le filtre.</p>
+          <button class="mt-4 text-xs font-mono font-bold text-primary" (click)="catalog.query.set(''); catalog.active.set(null)">Réinitialiser</button>
+        </div>
+      }
+
+      @for (snippet of snippets(); track snippet.id) {
+        <article class="rounded-xl border border-outline-variant/70 bg-surface-container-low p-5 shadow-lg transition hover:border-primary/50">
+          <button class="block w-full text-left cursor-pointer" (click)="open(snippet)">
+            <div class="flex flex-wrap items-center gap-2">
+              <span class="rounded-full bg-error-container/20 px-2 py-0.5 font-mono text-[10px] font-bold uppercase text-error">{{ snippet.type }}</span>
+              @for (tag of snippet.tags; track tag) {
+                <span class="rounded-full border border-outline-variant px-2 py-0.5 font-mono text-[10px] text-on-surface-variant">#{{ tag }}</span>
+              }
+            </div>
+            <h3 class="mt-4 text-xl font-bold leading-snug hover:text-primary transition-colors">{{ snippet.title }}</h3>
+            <p class="mt-2 line-clamp-3 text-sm leading-relaxed text-on-surface-variant">{{ snippet.description }}</p>
+            <pre class="mt-4 max-h-48 overflow-hidden rounded-lg border border-outline-variant bg-surface-container-lowest p-4 font-mono text-xs text-on-surface-variant">{{ snippet.code }}</pre>
+          </button>
+          <footer class="mt-4 flex flex-wrap items-center justify-between gap-3 border-t border-outline-variant/30 pt-4">
+            <div class="flex items-center gap-3">
+              <img class="h-8 w-8 rounded-full object-cover" [src]="snippet.author.avatar" [alt]="snippet.author.name" />
+              <span class="text-xs text-on-surface-variant">@{{ snippet.author.handle }} · {{ snippet.createdAt }}</span>
+            </div>
+            <div class="flex gap-2">
+              <button class="rounded-lg border px-3 py-1.5 font-mono text-xs flex items-center gap-1.5 cursor-pointer transition-all hover:bg-error/10 hover:border-error/50" [class.border-error]="snippet.isLikedByMe" [class.text-error]="snippet.isLikedByMe" [class.border-outline-variant]="!snippet.isLikedByMe" (click)="$event.stopPropagation(); catalog.like(snippet.id)">
+                <span>♥</span> Like {{ snippet.likes }}
+              </button>
+              <span class="rounded-lg border border-outline-variant px-3 py-1.5 font-mono text-xs text-on-surface-variant">{{ snippet.solutionsCount }} solutions</span>
+            </div>
+          </footer>
+        </article>
+      }
+    </section>
+
+    <aside class="space-y-5">
+      <section class="rounded-xl border border-outline-variant bg-surface-container-low p-5">
+        <h3 class="font-mono text-xs font-bold uppercase text-primary">Tags Populaires</h3>
+        <div class="mt-4 flex flex-wrap gap-2">
+          @for (tag of catalog.tags(); track tag.name) {
+            <button class="rounded-full border border-outline-variant px-3 py-1 font-mono text-xs text-on-surface-variant hover:border-primary hover:text-primary cursor-pointer" (click)="catalog.active.set(tag.name)">#{{ tag.name }} {{ tag.count }}</button>
+          }
+        </div>
+      </section>
+    </aside>
+  </div>
+</div>

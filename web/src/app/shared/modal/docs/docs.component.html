@@ -1,0 +1,21 @@
+@if (workspace.docs()) {
+  <div class="fixed inset-0 z-[70] grid place-items-center bg-black/60 p-4" (click)="workspace.docs.set(false)">
+    <section class="w-full max-w-2xl rounded-xl border border-outline-variant bg-surface p-6 shadow-2xl" (click)="$event.stopPropagation()">
+      <div class="flex items-start justify-between gap-4 border-b border-outline-variant/40 pb-4">
+        <div>
+          <h2 class="text-xl font-bold text-on-surface">Documentation</h2>
+          <p class="mt-1 text-sm text-on-surface-variant">Guides rapides pour contribuer, commenter et publier des snippets.</p>
+        </div>
+        <button class="rounded-lg px-3 py-1 text-xl text-on-surface-variant hover:bg-surface-container" (click)="workspace.docs.set(false)">×</button>
+      </div>
+      <div class="mt-5 grid gap-4 sm:grid-cols-3">
+        @for (item of ['Publier un bug clair', 'Voter et sauvegarder', 'Accepter une solution']; track item) {
+          <article class="rounded-lg border border-outline-variant/50 bg-surface-container-low p-4">
+            <h3 class="font-mono text-xs font-bold uppercase text-primary">{{ item }}</h3>
+            <p class="mt-2 text-xs leading-relaxed text-on-surface-variant">Gardez le contexte, les étapes et le code minimal pour aider la communauté à résoudre vite.</p>
+          </article>
+        }
+      </div>
+    </section>
+  </div>
+}

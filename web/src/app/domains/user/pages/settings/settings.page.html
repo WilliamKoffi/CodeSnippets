@@ -1,0 +1,39 @@
+<div class="mx-auto max-w-3xl p-4 py-6 sm:p-8">
+  <section class="rounded-xl border border-outline-variant bg-surface-container-low p-6 shadow-xl">
+    <h1 class="text-2xl font-bold">Paramètres</h1>
+    <p class="mt-1 text-sm text-on-surface-variant">Mettez à jour votre profil local et les données de démonstration.</p>
+    @if (success()) {
+      <p class="mt-4 rounded-lg border border-primary/40 bg-primary/10 p-3 text-sm text-primary">Profil mis à jour avec succès.</p>
+    }
+    @if (error()) {
+      <p class="mt-4 rounded-lg border border-error/40 bg-error/10 p-3 text-sm text-error">{{ error() }}</p>
+    }
+    <form class="mt-6 grid gap-4" (ngSubmit)="save()">
+      <label>
+        <span class="text-[10px] font-mono font-bold uppercase text-on-surface-variant">Nom</span>
+        <input class="mt-1 w-full rounded-lg border border-outline-variant bg-surface px-3 py-2 outline-none focus:border-primary" [ngModel]="name()" (ngModelChange)="name.set($event)" name="name" />
+      </label>
+      <label>
+        <span class="text-[10px] font-mono font-bold uppercase text-on-surface-variant">Handle</span>
+        <input class="mt-1 w-full rounded-lg border border-outline-variant bg-surface px-3 py-2 font-mono outline-none focus:border-primary" [ngModel]="handle()" (ngModelChange)="handle.set($event)" name="handle" />
+      </label>
+      <label>
+        <span class="text-[10px] font-mono font-bold uppercase text-on-surface-variant">Role</span>
+        <select class="mt-1 w-full rounded-lg border border-outline-variant bg-surface px-3 py-2" [ngModel]="role()" (ngModelChange)="role.set($event)" name="role">
+          <option value="frontend">frontend</option>
+          <option value="backend">backend</option>
+          <option value="fullstack">fullstack</option>
+          <option value="devops">devops</option>
+        </select>
+      </label>
+      <label>
+        <span class="text-[10px] font-mono font-bold uppercase text-on-surface-variant">Level</span>
+        <input class="mt-1 w-full rounded-lg border border-outline-variant bg-surface px-3 py-2 outline-none focus:border-primary" [ngModel]="level()" (ngModelChange)="level.set($event)" name="level" />
+      </label>
+      <div class="flex flex-wrap gap-3">
+        <button class="rounded-lg bg-primary px-5 py-3 font-mono text-xs font-bold uppercase text-on-primary">Enregistrer</button>
+        <button type="button" class="rounded-lg border border-error/50 px-5 py-3 font-mono text-xs font-bold uppercase text-error" (click)="resetData()">Réinitialiser les données</button>
+      </div>
+    </form>
+  </section>
+</div>

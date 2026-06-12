@@ -1,0 +1,19 @@
+<main class="grid min-h-screen place-items-center bg-grid-pattern p-4 text-on-surface">
+  <form class="w-full max-w-md rounded-2xl border border-outline-variant bg-surface p-8 shadow-2xl" (ngSubmit)="submit()">
+    <a routerLink="/" class="inline-block">
+      <app-logo />
+    </a>
+    <h1 class="mt-8 text-2xl font-extrabold">Reset Access</h1>
+    <p class="mt-2 text-sm text-on-surface-variant">Entrez votre e-mail de développeur pour recevoir un lien de récupération.</p>
+    @if (sent()) {
+      <p class="mt-5 rounded-lg border border-tertiary/40 bg-tertiary/10 p-3 text-sm text-tertiary">Un e-mail contenant le lien de récupération vous a été envoyé.</p>
+    }
+    @if (error()) {
+      <p class="mt-5 rounded-lg border border-error/40 bg-error/10 p-3 text-sm text-error">{{ error() }}</p>
+    }
+    <label class="mt-6 block text-[10px] font-mono font-bold uppercase text-on-surface-variant">Email</label>
+    <input type="email" required class="mt-1 w-full rounded-lg border border-outline-variant bg-surface-container-low px-3 py-2 text-sm outline-none focus:border-primary" [ngModel]="email()" (ngModelChange)="email.set($event)" name="email" />
+    <button class="mt-5 w-full rounded-lg bg-primary py-3 font-mono text-xs font-bold uppercase text-on-primary">Envoyer</button>
+    <a routerLink="/auth/login" class="mt-5 block text-center text-xs text-primary hover:underline">Retour à la connexion</a>
+  </form>
+</main>
