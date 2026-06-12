@@ -1,8 +1,12 @@
 package com.example.api;
 
 import com.example.api.domains.auth.User;
-import com.example.api.domains.auth.UserRepository;
-import com.example.api.domains.snippets.*;
+import com.example.api.domains.auth.repositories.UserRepository;
+import com.example.api.domains.snippets.repositories.SnippetRepository;
+import com.example.api.domains.snippets.repositories.TagRepository;
+import com.example.api.domains.snippets.domain.Snippet;
+import com.example.api.domains.snippets.domain.Solution;
+import com.example.api.domains.snippets.domain.Tag;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
@@ -17,25 +21,27 @@ public class DatabaseSeeder implements CommandLineRunner {
     private final UserRepository userRepository;
     private final TagRepository tagRepository;
     private final SnippetRepository snippetRepository;
-    private final SolutionRepository solutionRepository;
 
     public DatabaseSeeder(
             UserRepository userRepository,
             TagRepository tagRepository,
-            SnippetRepository snippetRepository,
-            SolutionRepository solutionRepository) {
+            SnippetRepository snippetRepository) {
         this.userRepository = userRepository;
         this.tagRepository = tagRepository;
         this.snippetRepository = snippetRepository;
-        this.solutionRepository = solutionRepository;
     }
 
     @Override
     public void run(String... args) throws Exception {
-        if (userRepository.count() > 0 || snippetRepository.count() > 0) {
-            System.out.println("Database already seeded. Skipping seeder.");
+        if (snippetRepository.count() > 0 && userRepository.existsById("current_user")) {
+            System.out.println("Database already seeded with snippets and default user. Skipping seeder.");
             return;
         }
+
+        System.out.println("Clearing old tables...");
+        snippetRepository.deleteAll();
+        tagRepository.deleteAll();
+        userRepository.deleteAll();
 
         System.out.println("Seeding database with default users, tags, snippets, and solutions...");
 
@@ -114,7 +120,12 @@ public class DatabaseSeeder implements CommandLineRunner {
                 "Master"
         );
 
-        userRepository.saveAll(List.of(ada, devMaster, reactNinja, cleanCoder, devMarco, sarahCodes));
+        saveUserIfMissing(ada);
+        saveUserIfMissing(devMaster);
+        saveUserIfMissing(reactNinja);
+        saveUserIfMissing(cleanCoder);
+        saveUserIfMissing(devMarco);
+        saveUserIfMissing(sarahCodes);
 
         // 2. Seed Tags
         Tag react = tagRepository.save(new Tag("react"));
@@ -136,34 +147,30 @@ public class DatabaseSeeder implements CommandLineRunner {
                 "bug",
                 devMaster
         );
-        snippet1.incrementLikes(); // Let's set the denormalized likesCount
-        for (int i = 0; i < 127; i++) snippet1.incrementLikes(); // 128 total
-        snippet1.incrementSolutions();
-        snippet1.incrementSolutions(); // 2 solutions
-        snippet1.updateTags(Set.of(react, hooks, memoryLeak));
-        snippetRepository.save(snippet1);
+        snippet1.like();
+        for (int i = 0; i < 127; i++) snippet1.like();
+        snippet1.tag(Set.of(react, hooks, memoryLeak));
 
         Solution solution1 = new Solution(
-                "solution_1",
-                snippet1,
+                null,
                 reactNinja,
                 "Le problème est que `ws.close()` est asynchrone, et l'événement `onmessage` peut encore se déclencher juste après l'initiation de la fermeture, mais avant l'arrêt effectif. Le modèle React standard ici consiste à introduire un indicateur `isMounted` (ou un `AbortController` si vous effectuiez un fetch standard).",
-                "  useEffect(() => {\n    let isMounted = true; // Ajout du flag\n    const ws = new WebSocket('wss://api.example.com/ticker');\n\n    ws.onmessage = (event) => {\n      if (!isMounted) return; // Clause de garde\n      const data = JSON.parse(event.data);\n      setPrice(data.price); \n    };\n\n    return () => {\n      isMounted = false; // Défini à false lors du démontage\n      ws.close();\n    };\n  }, []);",
-                42,
-                true
+                "  useEffect(() => {\n    let isMounted = true; // Ajout du flag\n    const ws = new WebSocket('wss://api.example.com/ticker');\n\n    ws.onmessage = (event) => {\n      if (!isMounted) return; // Clause de garde\n      const data = JSON.parse(event.data);\n      setPrice(data.price); \n    };\n\n    return () => {\n      isMounted = false; // Défini à false lors du démontage\n      ws.close();\n    };\n  }, []);"
         );
+        for (int i = 0; i < 42; i++) solution1.upvote();
+        solution1.accept();
 
         Solution solution2 = new Solution(
-                "solution_2",
-                snippet1,
+                null,
                 cleanCoder,
                 "Vous pouvez aussi utiliser un `AbortController` customisé ou déporter l'écoute du webSocket dans un gestionnaire de contexte global ou un store (de type Redux/Zustand) pour découpler la persistance des données du cycle de vie du composant unitaire.",
-                null,
-                11,
-                false
+                null
         );
+        for (int i = 0; i < 11; i++) solution2.upvote();
 
-        solutionRepository.saveAll(List.of(solution1, solution2));
+        snippet1.solve(solution1);
+        snippet1.solve(solution2);
+        snippetRepository.save(snippet1);
 
         Snippet snippet2 = new Snippet(
                 "bug_useEffect_loop",
@@ -174,8 +181,8 @@ public class DatabaseSeeder implements CommandLineRunner {
                 "bug",
                 devMarco
         );
-        for (int i = 0; i < 124; i++) snippet2.incrementLikes();
-        snippet2.updateTags(Set.of(react, hooks, bug));
+        for (int i = 0; i < 124; i++) snippet2.like();
+        snippet2.tag(Set.of(react, hooks, bug));
         snippetRepository.save(snippet2);
 
         Snippet snippet3 = new Snippet(
@@ -187,11 +194,19 @@ public class DatabaseSeeder implements CommandLineRunner {
                 "bug",
                 sarahCodes
         );
-        for (int i = 0; i < 89; i++) snippet3.incrementLikes();
-        snippet3.updateTags(Set.of(typescript, compilerError));
+        for (int i = 0; i < 89; i++) snippet3.like();
+        snippet3.tag(Set.of(typescript, compilerError));
         snippetRepository.save(snippet3);
 
         System.out.println("Database seeding completed successfully!");
+    }
+
+    private void saveUserIfMissing(User user) {
+        if (!userRepository.existsById(user.id())
+            && !userRepository.existsByEmail(user.email())
+            && !userRepository.existsByHandle(user.handle())) {
+            userRepository.save(user);
+        }
     }
 
     private String hashPassword(String password) {

@@ -98,4 +98,39 @@ describe('Catalog Service', () => {
     expect(updatedSol.voted).toBe('up');
     expect(updatedSol.votes).toBe(initialVotes + 1);
   });
+
+  it('should fetch snippets and tags from backend on load', async () => {
+    const mockSnippets = [
+      { id: '1', title: 'Snippet 1', description: 'Desc 1', code: '', language: 'js', tags: ['react'], author: { name: 'Ada', handle: 'ada', avatar: '', reputation: '100' }, likes: 5, solutionsCount: 0, type: 'snippet' }
+    ];
+    const mockTags = [{ name: 'react', count: '1' }];
+
+    const originalFetch = globalThis.fetch;
+    globalThis.fetch = ((url: string) => {
+      if (url.includes('/snippets')) {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve(mockSnippets)
+        } as any);
+      }
+      if (url.includes('/tags')) {
+        return Promise.resolve({
+          ok: true,
+          json: () => Promise.resolve(mockTags)
+        } as any);
+      }
+      return Promise.reject(new Error('Unknown URL'));
+    }) as any;
+
+    try {
+      await service.load();
+
+      expect(service.items().length).toBe(1);
+      expect(service.items()[0].title).toBe('Snippet 1');
+      expect(service.tags().length).toBe(1);
+      expect(service.tags()[0].name).toBe('react');
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
 });
