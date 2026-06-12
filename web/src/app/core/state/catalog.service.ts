@@ -38,10 +38,11 @@ export class Catalog {
 
   async load(): Promise<void> {
     try {
-      const snippetsRes = await fetch('http://localhost:8080/api/snippets');
+      const currentUser = this.storage.read<any>('cs_user', null);
+      const viewerId = currentUser ? currentUser.id : '';
+      const snippetsRes = await fetch(`http://localhost:8080/api/snippets?viewer=${viewerId}`);
       if (snippetsRes.ok) {
         const backendSnippetsRaw = await snippetsRes.json();
-        const currentUser = this.storage.read<any>('cs_user', null);
 
         const backendSnippets: Snippet[] = backendSnippetsRaw.map((bItem: any) => {
           return {
@@ -126,10 +127,18 @@ export class Catalog {
   }
 
   like(id: string): void {
+    const currentUser = this.storage.read<any>('cs_user', null);
+    const userId = currentUser ? currentUser.id : 'current_user';
+
+    const item = this.items().find((x) => x.id === id);
+    if (!item) return;
+
+    const liked = Boolean(item.isLikedByMe);
+
+    // Optimistic update
     this.store(
       this.items().map((item) => {
         if (item.id !== id) return item;
-        const liked = Boolean(item.isLikedByMe);
         return {
           ...item,
           isLikedByMe: !liked,
@@ -137,14 +146,54 @@ export class Catalog {
         };
       }),
     );
+
+    // Fire-and-forget backend call with revert
+    fetch(`http://localhost:8080/api/snippets/${id}/likes?userId=${userId}`, {
+      method: liked ? 'DELETE' : 'POST',
+    }).catch((e) => {
+      console.error('Error updating like on backend:', e);
+      // Revert optimistic state
+      this.store(
+        this.items().map((item) => {
+          if (item.id !== id) return item;
+          return {
+            ...item,
+            isLikedByMe: liked,
+            likes: liked ? item.likes + 1 : item.likes - 1,
+          };
+        }),
+      );
+    });
   }
 
   save(id: string): void {
+    const currentUser = this.storage.read<any>('cs_user', null);
+    const userId = currentUser ? currentUser.id : 'current_user';
+
+    const item = this.items().find((x) => x.id === id);
+    if (!item) return;
+
+    const saved = Boolean(item.isSavedByMe);
+
+    // Optimistic update
     this.store(
       this.items().map((item) =>
-        item.id === id ? { ...item, isSavedByMe: !item.isSavedByMe } : item,
+        item.id === id ? { ...item, isSavedByMe: !saved } : item,
       ),
     );
+
+    // Fire-and-forget backend call with revert
+    fetch(`http://localhost:8080/api/snippets/${id}/bookmarks?userId=${userId}`, {
+      method: saved ? 'DELETE' : 'POST',
+    }).catch((e) => {
+      console.error('Error updating bookmark on backend:', e);
+      // Revert optimistic state
+      this.store(
+        this.items().map((item) =>
+          item.id === id ? { ...item, isSavedByMe: saved } : item,
+        ),
+      );
+    });
   }
 
   async create(draft: Omit<Snippet, 'id' | 'createdAt' | 'likes' | 'solutionsCount' | 'solutions'>): Promise<void> {
@@ -312,40 +361,76 @@ export class Catalog {
   }
 
   voteSolution(snippetId: string, solutionId: string, direction: 'up' | 'down'): void {
+    const currentUser = this.storage.read<any>('cs_user', null);
+    const userId = currentUser ? currentUser.id : 'current_user';
+
+    const item = this.items().find((x) => x.id === snippetId);
+    if (!item) return;
+
+    const sol = (item.solutions ?? []).find((s) => s.id === solutionId);
+    if (!sol) return;
+
+    const prevVoted = sol.voted;
+    const prevVotes = sol.votes;
+
+    let newVoted: 'up' | 'down' | null = direction;
+    let voteDiff = 0;
+
+    if (sol.voted === direction) {
+      newVoted = null;
+      voteDiff = direction === 'up' ? -1 : 1;
+    } else {
+      const prevWeight = sol.voted === 'up' ? 1 : sol.voted === 'down' ? -1 : 0;
+      const newWeight = direction === 'up' ? 1 : -1;
+      voteDiff = newWeight - prevWeight;
+    }
+
+    // Optimistic update
     this.store(
-      this.items().map((item) => {
-        if (item.id !== snippetId) return item;
-
-        const updatedSolutions = (item.solutions ?? []).map((sol) => {
-          if (sol.id !== solutionId) return sol;
-
-          let newVoted: 'up' | 'down' | null = direction;
-          let voteDiff = 0;
-
-          if (sol.voted === direction) {
-            // Cancel the vote
-            newVoted = null;
-            voteDiff = direction === 'up' ? -1 : 1;
-          } else {
-            // New vote or direction change
-            const prevWeight = sol.voted === 'up' ? 1 : sol.voted === 'down' ? -1 : 0;
-            const newWeight = direction === 'up' ? 1 : -1;
-            voteDiff = newWeight - prevWeight;
-          }
-
+      this.items().map((it) => {
+        if (it.id !== snippetId) return it;
+        const updatedSolutions = (it.solutions ?? []).map((s) => {
+          if (s.id !== solutionId) return s;
           return {
-            ...sol,
+            ...s,
             voted: newVoted,
-            votes: sol.votes + voteDiff,
+            votes: s.votes + voteDiff,
           };
         });
-
         return {
-          ...item,
+          ...it,
           solutions: updatedSolutions,
         };
       }),
     );
+
+    // Fire-and-forget backend call
+    const isCancel = sol.voted === direction;
+    const url = `http://localhost:8080/api/solutions/${solutionId}/votes?userId=${userId}` + (isCancel ? '' : `&direction=${direction}`);
+
+    fetch(url, {
+      method: isCancel ? 'DELETE' : 'POST',
+    }).catch((e) => {
+      console.error('Error updating vote on backend:', e);
+      // Revert optimistic state
+      this.store(
+        this.items().map((it) => {
+          if (it.id !== snippetId) return it;
+          const updatedSolutions = (it.solutions ?? []).map((s) => {
+            if (s.id !== solutionId) return s;
+            return {
+              ...s,
+              voted: prevVoted,
+              votes: prevVotes,
+            };
+          });
+          return {
+            ...it,
+            solutions: updatedSolutions,
+          };
+        }),
+      );
+    });
   }
 
   purge(): void {

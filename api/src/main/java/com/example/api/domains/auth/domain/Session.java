@@ -6,8 +6,7 @@ import com.example.api.domains.auth.requests.LoginRequest;
 
 public final class Session {
 
-    private Session() {
-    }
+    private Session() {}
 
     public static User establish(LoginRequest request, UserRepository directory) {
         User user = directory.findByEmail(request.email())

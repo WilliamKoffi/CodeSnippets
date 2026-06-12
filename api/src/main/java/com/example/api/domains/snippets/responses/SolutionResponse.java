@@ -2,6 +2,8 @@ package com.example.api.domains.snippets.responses;
 
 import com.example.api.domains.auth.User;
 import com.example.api.domains.snippets.domain.Solution;
+import com.example.api.domains.snippets.domain.Vote;
+import com.example.api.domains.snippets.repositories.VoteRepository;
 
 public record SolutionResponse(
     String id,
@@ -10,7 +12,8 @@ public record SolutionResponse(
     String content,
     boolean accepted,
     String code,
-    String createdAt
+    String createdAt,
+    String voted
 ) {
     public record SolutionAuthorResponse(
         String name,
@@ -20,6 +23,10 @@ public record SolutionResponse(
     ) {}
 
     public static SolutionResponse build(Solution solution, String viewer) {
+        return build(solution, viewer, null);
+    }
+
+    public static SolutionResponse build(Solution solution, String viewer, VoteRepository voteRepo) {
         User author = solution.author();
         SolutionAuthorResponse authorDto = new SolutionAuthorResponse(
             author.name(),
@@ -28,6 +35,13 @@ public record SolutionResponse(
             viewer != null && viewer.equals(author.id())
         );
 
+        String voted = null;
+        if (viewer != null && voteRepo != null) {
+            voted = voteRepo.findBySolutionIdAndUserId(solution.id(), viewer)
+                .map(Vote::direction)
+                .orElse(null);
+        }
+
         return new SolutionResponse(
             solution.id(),
             authorDto,
@@ -35,7 +49,8 @@ public record SolutionResponse(
             solution.content(),
             solution.accepted(),
             solution.code(),
-            new Age(solution.created()).toString()
+            new Age(solution.created()).toString(),
+            voted
         );
     }
 }

@@ -3,6 +3,9 @@ package com.example.api.domains.snippets.responses;
 import com.example.api.domains.auth.User;
 import com.example.api.domains.snippets.domain.Snippet;
 import com.example.api.domains.snippets.domain.Tag;
+import com.example.api.domains.snippets.repositories.BookmarkRepository;
+import com.example.api.domains.snippets.repositories.LikeRepository;
+import com.example.api.domains.snippets.repositories.VoteRepository;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -32,6 +35,15 @@ public record SnippetResponse(
     ) {}
 
     public static SnippetResponse build(Snippet snippet, String viewer) {
+        return build(snippet, viewer, null, null, null);
+    }
+
+    public static SnippetResponse build(
+            Snippet snippet,
+            String viewer,
+            LikeRepository likeRepo,
+            BookmarkRepository bookmarkRepo,
+            VoteRepository voteRepo) {
         User creator = snippet.author();
         AuthorResponse author = new AuthorResponse(
             creator.name(),
@@ -47,8 +59,11 @@ public record SnippetResponse(
 
         List<SolutionResponse> answers = snippet.solutions() == null ? List.of() :
             snippet.solutions().stream()
-                .map(solution -> SolutionResponse.build(solution, viewer))
+                .map(solution -> SolutionResponse.build(solution, viewer, voteRepo))
                 .toList();
+
+        boolean liked = viewer != null && likeRepo != null && likeRepo.existsBySnippetIdAndUserId(snippet.id(), viewer);
+        boolean saved = viewer != null && bookmarkRepo != null && bookmarkRepo.existsBySnippetIdAndUserId(snippet.id(), viewer);
 
         return new SnippetResponse(
             snippet.id(),
@@ -63,8 +78,8 @@ public record SnippetResponse(
             new Age(snippet.created()).toString(),
             snippet.type(),
             answers,
-            false,
-            false
+            liked,
+            saved
         );
     }
 }

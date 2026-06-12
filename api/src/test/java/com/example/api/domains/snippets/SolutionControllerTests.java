@@ -2,6 +2,7 @@ package com.example.api.domains.snippets;
 
 import com.example.api.domains.snippets.catalogs.Solution;
 import com.example.api.domains.snippets.requests.CreateSolutionRequest;
+import com.example.api.domains.snippets.repositories.VoteRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
@@ -14,14 +15,16 @@ import static org.mockito.Mockito.*;
 class SolutionControllerTests {
 
     private Solution service;
+    private VoteRepository votes;
     private SnippetSolutionController snippetSolutionController;
     private AcceptedSolutionController acceptedSolutionController;
 
     @BeforeEach
     void setUp() {
         service = mock(Solution.class);
-        snippetSolutionController = new SnippetSolutionController(service);
-        acceptedSolutionController = new AcceptedSolutionController(service);
+        votes = mock(VoteRepository.class);
+        snippetSolutionController = new SnippetSolutionController(service, votes);
+        acceptedSolutionController = new AcceptedSolutionController(service, votes);
     }
 
     @Test
