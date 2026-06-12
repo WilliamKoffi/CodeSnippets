@@ -40,7 +40,47 @@ export class Catalog {
     try {
       const snippetsRes = await fetch('http://localhost:8080/api/snippets');
       if (snippetsRes.ok) {
-        const backendSnippets: Snippet[] = await snippetsRes.json();
+        const backendSnippetsRaw = await snippetsRes.json();
+        const currentUser = this.storage.read<any>('cs_user', null);
+
+        const backendSnippets: Snippet[] = backendSnippetsRaw.map((bItem: any) => {
+          return {
+            id: bItem.id,
+            title: bItem.title,
+            description: bItem.description,
+            code: bItem.code,
+            language: bItem.language,
+            tags: bItem.tags,
+            author: {
+              name: bItem.author.name,
+              handle: bItem.author.handle,
+              avatar: bItem.author.avatar,
+              reputation: bItem.author.reputation,
+              isAuthor: bItem.author.owner || (currentUser && bItem.author.handle === currentUser.handle),
+            },
+            likes: bItem.likes,
+            solutionsCount: bItem.tally !== undefined ? bItem.tally : bItem.solutionsCount,
+            createdAt: bItem.age !== undefined ? bItem.age : bItem.createdAt,
+            type: bItem.type,
+            solutions: (bItem.solutions || []).map((sol: any) => ({
+              id: sol.id,
+              author: {
+                name: sol.author.name,
+                avatar: sol.author.avatar,
+                reputation: sol.author.reputation,
+                isAuthor: sol.author.isAuthor,
+              },
+              votes: sol.votes,
+              content: sol.content,
+              accepted: sol.accepted,
+              code: sol.code || undefined,
+              createdAt: sol.createdAt,
+              voted: sol.voted,
+            })),
+            isLikedByMe: bItem.liked !== undefined ? bItem.liked : bItem.isLikedByMe,
+            isSavedByMe: bItem.saved !== undefined ? bItem.saved : bItem.isSavedByMe,
+          };
+        });
         
         // Preserve local state for likes, saves, solutions, and votes
         const localSnippets = this.storage.read<Snippet[]>('cs_snippets', []);
@@ -49,10 +89,10 @@ export class Catalog {
           if (localItem) {
             return {
               ...bItem,
-              likes: localItem.likes,
-              isLikedByMe: localItem.isLikedByMe,
-              isSavedByMe: localItem.isSavedByMe,
-              solutionsCount: localItem.solutionsCount,
+              likes: localItem.likes !== undefined ? localItem.likes : bItem.likes,
+              isLikedByMe: localItem.isLikedByMe !== undefined ? localItem.isLikedByMe : bItem.isLikedByMe,
+              isSavedByMe: localItem.isSavedByMe !== undefined ? localItem.isSavedByMe : bItem.isSavedByMe,
+              solutionsCount: localItem.solutionsCount !== undefined ? localItem.solutionsCount : bItem.solutionsCount,
               solutions: localItem.solutions || bItem.solutions,
             };
           }
@@ -151,24 +191,124 @@ export class Catalog {
     }
   }
 
-  solve(id: string, draft: Omit<Solution, 'id' | 'createdAt'>): void {
-    this.store(
-      this.items().map((item) => {
-        if (item.id !== id) return item;
+  async solve(id: string, draft: Omit<Solution, 'id' | 'createdAt'>): Promise<void> {
+    try {
+      const currentUser = this.storage.read<any>('cs_user', null);
+      const authorId = currentUser ? currentUser.id : 'current_user';
 
-        const solution: Solution = {
-          ...draft,
-          id: `solution_${Date.now()}`,
-          createdAt: "À l'instant",
-        };
+      const response = await fetch(`http://localhost:8080/api/snippets/${id}/solutions`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          author: authorId,
+          content: draft.content,
+          code: draft.code || null
+        })
+      });
 
-        return {
-          ...item,
-          solutionsCount: item.solutionsCount + 1,
-          solutions: [...(item.solutions ?? []), solution],
-        };
-      }),
-    );
+      if (!response.ok) {
+        throw new Error('Failed to submit solution to backend');
+      }
+
+      const backendSol = await response.json();
+      const newSolution: Solution = {
+        id: backendSol.id,
+        author: {
+          name: backendSol.author.name,
+          avatar: backendSol.author.avatar,
+          reputation: backendSol.author.reputation,
+          isAuthor: backendSol.author.isAuthor,
+        },
+        votes: backendSol.votes,
+        content: backendSol.content,
+        accepted: backendSol.accepted,
+        code: backendSol.code || undefined,
+        createdAt: backendSol.createdAt,
+      };
+
+      this.store(
+        this.items().map((item) => {
+          if (item.id !== id) return item;
+          return {
+            ...item,
+            solutionsCount: item.solutionsCount + 1,
+            solutions: [...(item.solutions ?? []), newSolution],
+          };
+        }),
+      );
+    } catch (e) {
+      console.error('Error submitting solution:', e);
+      // Fallback local creation
+      const localSolution: Solution = {
+        ...draft,
+        id: `solution_${Date.now()}`,
+        createdAt: "À l'instant",
+      };
+
+      this.store(
+        this.items().map((item) => {
+          if (item.id !== id) return item;
+          return {
+            ...item,
+            solutionsCount: item.solutionsCount + 1,
+            solutions: [...(item.solutions ?? []), localSolution],
+          };
+        }),
+      );
+    }
+  }
+
+  async acceptSolution(snippetId: string, solutionId: string): Promise<void> {
+    try {
+      const currentUser = this.storage.read<any>('cs_user', null);
+      const viewerId = currentUser ? currentUser.id : 'current_user';
+
+      const response = await fetch(`http://localhost:8080/api/solutions/${solutionId}/accept?viewer=${viewerId}`, {
+        method: 'PUT'
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to accept solution on backend');
+      }
+
+      const backendSol = await response.json();
+
+      this.store(
+        this.items().map((item) => {
+          if (item.id !== snippetId) return item;
+          const updatedSolutions = (item.solutions ?? []).map((sol) => {
+            if (sol.id !== solutionId) return sol;
+            return {
+              ...sol,
+              accepted: backendSol.accepted,
+            };
+          });
+          return {
+            ...item,
+            solutions: updatedSolutions,
+          };
+        })
+      );
+    } catch (e) {
+      console.error('Error accepting solution:', e);
+      // Fallback local accept behavior
+      this.store(
+        this.items().map((item) => {
+          if (item.id !== snippetId) return item;
+          const updatedSolutions = (item.solutions ?? []).map((sol) => {
+            if (sol.id !== solutionId) return sol;
+            return {
+              ...sol,
+              accepted: true,
+            };
+          });
+          return {
+            ...item,
+            solutions: updatedSolutions,
+          };
+        })
+      );
+    }
   }
 
   voteSolution(snippetId: string, solutionId: string, direction: 'up' | 'down'): void {

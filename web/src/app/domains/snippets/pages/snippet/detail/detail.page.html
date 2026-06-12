@@ -62,8 +62,14 @@
                     ▼
                   </button>
                 </div>
-                @if (solution.accepted) {
+                 @if (solution.accepted) {
                   <span class="rounded-full border border-tertiary/40 px-2 py-1 font-mono text-[10px] text-tertiary">Accepted</span>
+                } @else if (item.author.isAuthor) {
+                  <button 
+                    class="rounded-full border border-tertiary/40 px-2 py-1 font-mono text-[10px] text-tertiary hover:bg-tertiary/10 cursor-pointer transition-all"
+                    (click)="catalog.acceptSolution(item.id, solution.id)">
+                    Accepter
+                  </button>
                 }
               </div>
             </div>

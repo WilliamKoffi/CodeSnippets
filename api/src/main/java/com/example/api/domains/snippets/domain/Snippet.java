@@ -105,8 +105,15 @@ public class Snippet {
     public void solve(Solution solution) {
         Objects.requireNonNull(solution, "solution must not be null");
 
-        if (solution.snippet() != null && solution.snippet() != this) {
-            throw new IllegalArgumentException("Solution already belongs to another snippet");
+        String solutionSnippetId = solution.snippet() != null ? solution.snippet().id() : null;
+        if (solutionSnippetId != null) {
+            if (!solutionSnippetId.equals(this.id)) {
+                throw new IllegalArgumentException("Solution already belongs to another snippet");
+            }
+        } else {
+            if (solution.snippet() != null && solution.snippet() != this) {
+                throw new IllegalArgumentException("Solution already belongs to another snippet");
+            }
         }
 
         if (this.solutions.contains(solution)) {
@@ -116,6 +123,50 @@ public class Snippet {
         solution.attach(this);
         this.solutions.add(solution);
         this.answers++;
+    }
+
+    public boolean accept(Solution solution, String viewer) {
+        Objects.requireNonNull(solution, "solution must not be null");
+
+        String solutionSnippetId = solution.snippet() != null ? solution.snippet().id() : null;
+        if (solutionSnippetId == null) {
+            if (solution.snippet() != this) {
+                throw new IllegalArgumentException("Solution does not belong to this snippet");
+            }
+        } else {
+            if (!solutionSnippetId.equals(this.id)) {
+                throw new IllegalArgumentException("Solution does not belong to this snippet");
+            }
+        }
+
+        if (!author.id().equals(viewer)) {
+            throw new IllegalArgumentException("Only the author of the snippet can accept this solution");
+        }
+
+        if (solution.accepted()) {
+            return false;
+        }
+
+        boolean accepted = solutions.stream()
+            .anyMatch(candidate -> {
+                if (candidate == solution) {
+                    return false;
+                }
+                String candidateId = candidate.id();
+                String solutionId = solution.id();
+                if (candidateId != null && solutionId != null) {
+                    if (candidateId.equals(solutionId)) {
+                        return false;
+                    }
+                }
+                return candidate.accepted();
+            });
+        if (accepted) {
+            throw new IllegalStateException("A solution has already been accepted for this snippet");
+        }
+
+        solution.accept();
+        return true;
     }
 
     public void tag(Set<Tag> tags) {

@@ -133,4 +133,95 @@ describe('Catalog Service', () => {
       globalThis.fetch = originalFetch;
     }
   });
+
+  it('should submit a solution to backend and update list', async () => {
+    const mockSolution = {
+      id: 'solution_123',
+      author: { name: 'Ada', avatar: '', reputation: '100', isAuthor: true },
+      votes: 1,
+      content: 'My fix content',
+      accepted: false,
+      code: 'console.log()',
+      createdAt: 'À l\'instant'
+    };
+
+    const originalFetch = globalThis.fetch;
+    let fetchCalledWith: any = null;
+    globalThis.fetch = ((url: string, init: any) => {
+      fetchCalledWith = { url, init };
+      return Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockSolution)
+      } as any);
+    }) as any;
+
+    try {
+      const initialItems = service.items();
+      const first = initialItems[0];
+      const initialSolutionsCount = first.solutionsCount;
+
+      await service.solve(first.id, {
+        author: { name: 'Ada', avatar: '', reputation: '100' },
+        votes: 1,
+        content: 'My fix content',
+        accepted: false,
+        code: 'console.log()'
+      });
+
+      expect(fetchCalledWith.url).toContain(`/snippets/${first.id}/solutions`);
+      expect(fetchCalledWith.init.method).toBe('POST');
+      
+      const updated = service.items().find((item) => item.id === first.id)!;
+      expect(updated.solutionsCount).toBe(initialSolutionsCount + 1);
+      expect(updated.solutions!.find((s) => s.id === 'solution_123')).toBeDefined();
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
+
+  it('should accept a solution and update state', async () => {
+    const mockSolution = {
+      id: 'solution_123',
+      author: { name: 'Ada', avatar: '', reputation: '100', isAuthor: true },
+      votes: 1,
+      content: 'My fix content',
+      accepted: true,
+      code: 'console.log()',
+      createdAt: 'À l\'instant'
+    };
+
+    const originalFetch = globalThis.fetch;
+    let fetchCalledWith: any = null;
+    globalThis.fetch = ((url: string, init: any) => {
+      fetchCalledWith = { url, init };
+      return Promise.resolve({
+        ok: true,
+        json: () => Promise.resolve(mockSolution)
+      } as any);
+    }) as any;
+
+    try {
+      // Setup a snippet with an initial solution
+      const first = service.items()[0];
+      first.solutions = [{
+        id: 'sol_to_accept',
+        author: { name: 'Ada', avatar: '', reputation: '100' },
+        votes: 1,
+        content: 'Fix',
+        accepted: false,
+        createdAt: 'À l\'instant'
+      }];
+
+      await service.acceptSolution(first.id, 'sol_to_accept');
+
+      expect(fetchCalledWith.url).toContain('/solutions/sol_to_accept/accept');
+      expect(fetchCalledWith.init.method).toBe('PUT');
+
+      const updated = service.items().find((item) => item.id === first.id)!;
+      const acceptedSol = updated.solutions!.find((s) => s.id === 'sol_to_accept')!;
+      expect(acceptedSol.accepted).toBe(true);
+    } finally {
+      globalThis.fetch = originalFetch;
+    }
+  });
 });
